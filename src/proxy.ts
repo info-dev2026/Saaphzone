@@ -2,8 +2,8 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
 /**
- * MAINTENANCE MODE MIDDLEWARE
- * ─────────────────────────────────────────────────────────────────
+ * MAINTENANCE MODE PROXY  (Next.js 16 — replaces the deprecated middleware.ts)
+ * ─────────────────────────────────────────────────────────────────────────────
  * When MAINTENANCE_MODE is true, ALL public requests are redirected
  * to /maintenance. The maintenance page itself and static assets
  * are always allowed through so the page renders correctly.
@@ -13,7 +13,7 @@ import type { NextRequest } from "next/server";
  *   2. Commit & push → Vercel re-deploys automatically
  *
  * To re-enable: set it back to true and push again.
- * ─────────────────────────────────────────────────────────────────
+ * ─────────────────────────────────────────────────────────────────────────────
  */
 const MAINTENANCE_MODE = true;
 
@@ -24,10 +24,9 @@ const BYPASS_PREFIXES = [
   "/api",           // API routes (if any)
   "/favicon",       // favicons
   "/Saaphzone",     // logo image used on the maintenance page
-  "/public",        // static public files
 ];
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   if (!MAINTENANCE_MODE) return NextResponse.next();
 
   const { pathname } = request.nextUrl;
@@ -47,7 +46,7 @@ export function middleware(request: NextRequest) {
 
 export const config = {
   /*
-   * Run middleware on ALL routes EXCEPT Next.js internals and static files.
+   * Run proxy on ALL routes EXCEPT Next.js internals and static files.
    * This regex skips: _next/static, _next/image, .ico, .png, .jpg etc.
    */
   matcher: [
